@@ -52,6 +52,7 @@ class Task extends Component {
             <span className={labelClassNames} onClick={onToggleDone}>
               {description}
             </span>
+
             <span className="created">
               {`created ${formatDistanceToNow(date, {
                 includeSeconds: true,
