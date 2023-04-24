@@ -1,6 +1,6 @@
 import { Component } from 'react';
 
-import NewTaskForm from '../NewTaskForm/NewTaskForm';
+import Form from '../Form/Form';
 import TaskList from '../TaskList/TaskList';
 import Footer from '../Footer/Footer';
 
@@ -29,13 +29,15 @@ class App extends Component {
       });
     };
 
-    this.addItem = (text) => {
+    this.addItem = (text, min, sec) => {
       const newElem = {
         description: text,
         id: this.id++,
         done: false,
         hidden: false,
         date: Date.now(),
+        min: min,
+        sec: sec,
       };
 
       this.setState(({ todoData }) => {
@@ -194,7 +196,7 @@ class App extends Component {
       <section className="todoapp">
         <header className="header">
           <h1>todos</h1>
-          <NewTaskForm addItem={this.addItem} />
+          <Form addItem={this.addItem} />
         </header>
         <section className="main">
           <TaskList

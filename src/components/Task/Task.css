@@ -139,7 +139,7 @@
   word-break: break-all;
   display: block;
   line-height: 1.2;
-  transition: color 0.4s;
+  /* transition: color 0.4s; */
   font-weight: 400;
   /* color: #4d4d4d; */
 }
@@ -191,4 +191,35 @@
 
 .todo-list li.editing:last-child {
   margin-bottom: -1px;
+}
+
+.todo-list li .icon-pause,
+.todo-list li .icon-play {
+  width: 18px;
+  height: 18px;
+}
+
+.todo-list li .icon-play {
+  left: -45px;
+  top: 28px;
+  font-size: 15px;
+}
+
+.todo-list li .icon-pause {
+  font-size: 18px;
+  left: -25px;
+  top: 27px;
+}
+
+.icon-play::after {
+  content: '▶';
+}
+
+.icon-pause::after {
+  content: '⏸';
+}
+
+.timer-button {
+  position: relative;
+  margin-left: 55px;
 }
