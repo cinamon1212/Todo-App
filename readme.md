@@ -1,5 +1,2 @@
 # Ссылка на развернутое приложение (с таймером)
-https://timer-dusky-nine.vercel.app/
-
-(без таймера)
-https://todo-app-nine-flame.vercel.app/
+https://todo-app-git-timer-cinamon1212.vercel.app
