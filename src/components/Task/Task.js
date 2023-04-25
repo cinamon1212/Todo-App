@@ -17,9 +17,11 @@ class Task extends Component {
     if (prevState.isTimerOn !== this.state.isTimerOn) {
       if (this.state.isTimerOn) {
         const newSec = this.state.sec - 1;
+
         this.setState({
           sec: newSec,
         });
+
         this.updateTimer();
       } else clearInterval(this.state.interval);
     }
