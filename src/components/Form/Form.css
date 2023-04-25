@@ -7,13 +7,14 @@
 .new-todo-form__timer {
   width: 15%;
   font-size: 24px;
-  border-width: initial;
+  /* border-width: initial;
   border-style: none;
   border-color: initial;
-  border-image: initial;
+  border-image: initial; */
   padding-left: 16px;
   background: rgba(0, 0, 0, 0.004);
   box-shadow: rgba(0, 0, 0, 0.03) 0px -2px 1px inset;
+  border: none;
 }
 
 .new-todo-form__submit {

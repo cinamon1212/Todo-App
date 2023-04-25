@@ -10,16 +10,27 @@ class Task extends Component {
     isTimerOn: false,
     min: this.props.min,
     sec: this.props.sec,
+    interval: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.isTimerOn && (prevState.sec !== this.state.sec || prevState.isTimerOn !== this.state.isTimerOn)) {
-      this.updateTimer();
+    if (prevState.isTimerOn !== this.state.isTimerOn) {
+      if (this.state.isTimerOn) {
+        const newSec = this.state.sec - 1;
+        this.setState({
+          sec: newSec,
+        });
+        this.updateTimer();
+      } else clearInterval(this.state.interval);
     }
   }
 
+  componentWillUnmount() {
+    clearInterval(this.state.interval);
+  }
+
   updateTimer = () => {
-    setTimeout(() => {
+    const intervalId = setInterval(() => {
       let sec = this.state.sec;
       let min = this.state.min;
       let newMin;
@@ -46,10 +57,13 @@ class Task extends Component {
 
       this.render();
     }, 1000);
+
+    this.setState({
+      interval: intervalId,
+    });
   };
 
-  onTimerPlayClick = (event) => {
-    console.log(event);
+  onTimerPlayClick = () => {
     this.setState({
       isTimerOn: true,
     });
