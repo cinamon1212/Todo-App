@@ -4,7 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 import './Task.css';
 
-class Task extends Component {
+export class Task extends Component {
   state = {
     label: '',
     isTimerOn: false,
@@ -16,7 +16,8 @@ class Task extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.isTimerOn !== this.state.isTimerOn) {
       if (this.state.isTimerOn) {
-        const newSec = this.state.sec - 1;
+        let newSec = this.state.sec - 1;
+        if (newSec < 10) newSec = `0${newSec}`;
 
         this.setState({
           sec: newSec,
@@ -159,5 +160,3 @@ Task.propTypes = {
   done: PropTypes.bool,
   id: PropTypes.number,
 };
-
-export default Task;
