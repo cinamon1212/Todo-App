@@ -39,6 +39,7 @@ export class Task extends Component {
     const intervalId = setInterval(() => {
       let sec = this.state.sec;
       let min = this.state.min;
+
       let newMin;
       let newSec;
 
