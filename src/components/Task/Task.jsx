@@ -16,14 +16,17 @@ export class Task extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.isTimerOn !== this.state.isTimerOn) {
       if (this.state.isTimerOn) {
-        let newSec = this.state.sec - 1;
-        if (newSec < 10) newSec = `0${newSec}`;
+        if (this.state.sec === '00' && this.state.min === '00') return;
+        else {
+          let newSec = this.state.sec - 1;
+          if (newSec < 10) newSec = `0${newSec}`;
 
-        this.setState({
-          sec: newSec,
-        });
+          this.setState({
+            sec: newSec,
+          });
 
-        this.updateTimer();
+          this.updateTimer();
+        }
       } else clearInterval(this.state.interval);
     }
   }

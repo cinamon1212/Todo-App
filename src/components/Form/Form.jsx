@@ -32,6 +32,9 @@ export class Form extends Component {
   };
 
   createTodo = (text, min, sec) => {
+    if (min < 10) min = `0${min}`;
+    if (sec < 10) sec = `0${sec}`;
+
     const elem = {
       id: this.id++,
       done: false,
