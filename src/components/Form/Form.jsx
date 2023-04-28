@@ -41,6 +41,7 @@ export class Form extends Component {
       min: min,
       sec: sec,
     };
+
     return elem;
   };
 
