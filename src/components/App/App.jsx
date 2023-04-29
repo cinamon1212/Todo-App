@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
 import { Form } from '../Form/Form';
 import { TaskList } from '../TaskList/TaskList';
@@ -6,60 +6,46 @@ import { Footer } from '../Footer/Footer';
 
 import './App.css';
 
-export class App extends Component {
-  state = {
-    todoData: [],
+export function App() {
+  const [todoData, setTodoData] = useState([]);
+
+  const deleteItem = (id) => {
+    const i = todoData.findIndex((el) => el.id === id);
+
+    const newArr = JSON.parse(JSON.stringify(todoData));
+    newArr.splice(i, 1);
+
+    setTodoData(newArr);
   };
 
-  deleteItem = (id) => {
-    this.setState(({ todoData }) => {
-      const i = todoData.findIndex((el) => el.id === id);
+  const addItem = (item) => {
+    let newArr = JSON.parse(JSON.stringify(todoData));
+    newArr.push(item);
 
-      const newArr = JSON.parse(JSON.stringify(todoData));
-      newArr.splice(i, 1);
+    setTodoData(newArr);
+  };
 
-      return {
-        todoData: newArr,
-      };
+  const onToggleDone = (id) => {
+    const i = todoData.findIndex((el) => el.id === id);
+
+    let newArr = JSON.parse(JSON.stringify(todoData));
+
+    newArr.forEach((item, index) => {
+      if (i === index) item.done = !todoData[i].done;
     });
+
+    const checkbox = document.getElementById(`${id}`);
+
+    if (!todoData[i].done) {
+      checkbox.checked = true;
+    } else {
+      checkbox.checked = false;
+    }
+
+    setTodoData(newArr);
   };
 
-  addItem = (item) => {
-    this.setState(({ todoData }) => {
-      let newArr = JSON.parse(JSON.stringify(todoData));
-      newArr.push(item);
-
-      return {
-        todoData: newArr,
-      };
-    });
-  };
-
-  onToggleDone = (id) => {
-    this.setState(({ todoData }) => {
-      const i = todoData.findIndex((el) => el.id === id);
-
-      let newArr = JSON.parse(JSON.stringify(todoData));
-
-      newArr.forEach((item, index) => {
-        if (i === index) item.done = !todoData[i].done;
-      });
-
-      const checkbox = document.getElementById(`${id}`);
-
-      if (!todoData[i].done) {
-        checkbox.checked = true;
-      } else {
-        checkbox.checked = false;
-      }
-
-      return {
-        todoData: newArr,
-      };
-    });
-  };
-
-  onEditingSubmit = (event) => {
+  const onEditingSubmit = (event) => {
     event.preventDefault();
 
     const form = event.target;
@@ -71,133 +57,111 @@ export class App extends Component {
     const task = form.parentElement.childNodes[0];
     task.classList.remove('hidden');
 
-    this.setState(({ todoData }) => {
-      const newArr = JSON.parse(JSON.stringify(todoData));
+    const newArr = JSON.parse(JSON.stringify(todoData));
 
-      const id = Number(form.id.slice(5));
+    const id = Number(form.id.slice(5));
 
-      newArr.forEach((element) => {
-        if (element.id === id) {
-          element.description = inputValue;
-        }
-      });
-
-      return {
-        todoData: newArr,
-      };
+    newArr.forEach((element) => {
+      if (element.id === id) {
+        element.description = inputValue;
+      }
     });
+
+    setTodoData(newArr);
   };
 
-  filterChange = (event) => {
+  const filterChange = (event) => {
     const lastFilter = document.querySelector('.selected');
     lastFilter.classList.remove('selected');
 
     const btn = event.target;
     btn.classList.add('selected');
 
-    this.setState(({ todoData }) => {
-      const newArr = JSON.parse(JSON.stringify(todoData));
+    const newArr = JSON.parse(JSON.stringify(todoData));
 
-      newArr.forEach((element) => {
-        element.hidden = false;
+    newArr.forEach((element) => {
+      element.hidden = false;
+      const div = document.getElementById(`${element.id}`).parentNode;
+      div.classList.remove('hidden');
+    });
+  };
+
+  const filterActive = (event) => {
+    filterChange(event);
+
+    const newArr = JSON.parse(JSON.stringify(todoData));
+
+    newArr.forEach((element) => {
+      if (element.done) {
+        element.hidden = !element.hidden;
+
         const div = document.getElementById(`${element.id}`).parentNode;
-        div.classList.remove('hidden');
-      });
+
+        div.classList.add('hidden');
+      }
     });
+
+    setTodoData(newArr);
   };
 
-  filterActive = (event) => {
-    this.filterChange(event);
+  const filterAll = (event) => {
+    filterChange(event);
+  };
 
-    this.setState(({ todoData }) => {
-      const newArr = JSON.parse(JSON.stringify(todoData));
+  const filterCompleted = (event) => {
+    filterChange(event);
 
-      newArr.forEach((element) => {
-        if (element.done) {
-          element.hidden = !element.hidden;
+    const newArr = JSON.parse(JSON.stringify(todoData));
 
-          const div = document.getElementById(`${element.id}`).parentNode;
+    newArr.forEach((element) => {
+      if (!element.done) {
+        element.hidden = !element.hidden;
 
-          div.classList.add('hidden');
-        }
-      });
+        const div = document.getElementById(`${element.id}`).parentNode;
 
-      return {
-        todoData: newArr,
-      };
+        div.classList.add('hidden');
+      }
     });
+
+    setTodoData(newArr);
   };
 
-  filterAll = (event) => {
-    this.filterChange(event);
-  };
+  const clearCompleted = () => {
+    const newArr = [];
 
-  filterCompleted = (event) => {
-    this.filterChange(event);
-
-    this.setState(({ todoData }) => {
-      const newArr = JSON.parse(JSON.stringify(todoData));
-
-      newArr.forEach((element) => {
-        if (!element.done) {
-          element.hidden = !element.hidden;
-
-          const div = document.getElementById(`${element.id}`).parentNode;
-
-          div.classList.add('hidden');
-        }
-      });
-
-      return {
-        todoData: newArr,
-      };
+    todoData.forEach((element) => {
+      if (!element.done) {
+        newArr.push(element);
+      }
     });
+
+    setTodoData(newArr);
   };
 
-  clearCompleted = () => {
-    this.setState(({ todoData }) => {
-      const newArr = [];
+  const doneCount = todoData.filter((el) => el.done).length;
+  const todoCount = todoData.length - doneCount;
 
-      todoData.forEach((element) => {
-        if (!element.done) {
-          newArr.push(element);
-        }
-      });
-
-      return {
-        todoData: newArr,
-      };
-    });
-  };
-
-  render() {
-    const { todoData } = this.state;
-
-    const doneCount = todoData.filter((el) => el.done).length;
-    const todoCount = todoData.length - doneCount;
-
-    return (
-      <section className="todoapp">
-        <header className="header">
-          <h1>todos</h1>
-          <Form addItem={this.addItem} />
-        </header>
-        <section className="main">
-          <TaskList
-            todos={todoData}
-            onDeleted={this.deleteItem}
-            onToggleDone={this.onToggleDone}
-            onEditingSubmit={this.onEditingSubmit}
-          />
-          <Footer
-            todo={todoCount}
-            filterActive={this.filterActive}
-            filterAll={this.filterAll}
-            filterCompleted={this.filterCompleted}
-            clearCompleted={this.clearCompleted}
-          />
-        </section>
+  return (
+    <section className="todoapp">
+      <header className="header">
+        <h1>todos</h1>
+        <Form addItem={addItem} />
+      </header>
+      <section className="main">
+        <TaskList
+          todos={todoData}
+          onDeleted={deleteItem}
+          onToggleDone={onToggleDone}
+          onEditingSubmit={onEditingSubmit}
+        />
+        <Footer
+          todo={todoCount}
+          filterActive={filterActive}
+          filterAll={filterAll}
+          filterCompleted={filterCompleted}
+          clearCompleted={clearCompleted}
+        />
       </section>
-    );
-  }
+    </section>
+  );
 }

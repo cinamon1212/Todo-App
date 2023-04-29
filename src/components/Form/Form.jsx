@@ -1,42 +1,30 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
 import './Form.css';
 
-export class Form extends Component {
-  id = 0;
+export function Form({ addItem }) {
+  const [label, setLabel] = useState('');
+  const [min, setMin] = useState('');
+  const [sec, setSec] = useState('');
+  const [itemId, setItemId] = useState(0);
 
-  state = {
-    label: '',
-    min: '',
-    sec: '',
-  };
-
-  onLabelChange = (event) => {
+  const onLabelChange = (event) => {
     event.target.value = event.target.value.slice(0, 7).toLowerCase();
 
-    this.setState({
-      label: event.target.value,
-    });
+    setLabel(event.target.value);
   };
 
-  setMin = (event) => {
-    this.setState({
-      min: event.target.value,
-    });
+  const setMinItem = (event) => {
+    setMin(event.target.value);
   };
 
-  setSec = (event) => {
-    this.setState({
-      sec: event.target.value,
-    });
+  const setSecItem = (event) => {
+    setSec(event.target.value);
   };
 
-  createTodo = (text, min, sec) => {
-    if (min < 10) min = `0${min}`;
-    if (sec < 10) sec = `0${sec}`;
-
+  const createTodo = (text, min, sec) => {
     const elem = {
-      id: this.id++,
+      id: itemId,
       done: false,
       hidden: false,
       date: Date.now(),
@@ -45,65 +33,64 @@ export class Form extends Component {
       sec: sec,
     };
 
+    setItemId((id) => id + 1);
+
     return elem;
   };
 
-  onKeyDown = (event) => {
+  const onKeyDown = (event) => {
     if (event.key === 'Enter') {
-      const { label, min, sec } = this.state;
-      const item = this.createTodo(label, min, sec);
-      this.props.addItem(item);
-      this.setState({
-        label: '',
-        min: '',
-        sec: '',
-      });
+      const item = createTodo(label, min, sec);
+      addItem(item);
+
+      setLabel('');
+      setMin('');
+      setSec('');
     }
   };
 
-  onInputMin(event) {
+  const onInputMin = (event) => {
     const value = event.target.value;
     event.target.value = value.replace(/\D/g, '');
     event.target.value = event.target.value.slice(0, 3);
     if (event.target.value[0] === '0') event.target.value = '';
-  }
+  };
 
-  onInputSec(event) {
+  const onInputSec = (event) => {
     const value = event.target.value;
     event.target.value = value.replace(/\D/g, '');
     event.target.value = event.target.value.slice(0, 2);
     if (event.target.value >= 60) event.target.value = 59;
 
     if (event.target.value[0] === '0') event.target.value = '';
-  }
+  };
 
-  render() {
-    const onChangeFunctions = [this.onLabelChange, this.setMin, this.setSec];
-    const inputPlaceholders = ['Task', 'Min', 'Sec'];
+  const onChangeFunctions = [onLabelChange, setMinItem, setSecItem];
+  const inputPlaceholders = ['Task', 'Min', 'Sec'];
+  const values = [label, min, sec];
 
-    return (
-      <div className="new-todo-div" onKeyDown={this.onKeyDown}>
-        {Object.entries(this.state).map((elem, i) => {
-          const inputValue = elem[1];
+  return (
+    <div className="new-todo-div" onKeyDown={onKeyDown}>
+      {inputPlaceholders.map((elem, i) => {
+        const inputValue = values[i];
 
-          let inputClass = '';
+        let inputClass = '';
 
-          if (!i) inputClass = 'new-todo';
-          else inputClass = 'new-todo-form__timer';
+        if (!i) inputClass = 'new-todo';
+        else inputClass = 'new-todo-form__timer';
 
-          return (
-            <input
-              key={elem[0]}
-              className={inputClass}
-              value={inputValue}
-              placeholder={inputPlaceholders[i]}
-              onChange={onChangeFunctions[i]}
-              autoFocus={!i ? true : false}
-              onInput={i === 1 ? this.onInputMin : i === 2 ? this.onInputSec : null}
-            />
-          );
-        })}
-      </div>
-    );
-  }
+        return (
+          <input
+            key={elem}
+            className={inputClass}
+            value={inputValue}
+            placeholder={inputPlaceholders[i]}
+            onChange={onChangeFunctions[i]}
+            autoFocus={!i ? true : false}
+            onInput={i === 1 ? onInputMin : i === 2 ? onInputSec : null}
+          />
+        );
+      })}
+    </div>
+  );
 }
