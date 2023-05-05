@@ -5,7 +5,6 @@ import { TaskList } from '../TaskList/TaskList';
 import { Footer } from '../Footer/Footer';
 
 import './App.css';
-// import { el } from 'date-fns/locale';
 
 export function App() {
   const [todoData, setTodoData] = useState([]);
