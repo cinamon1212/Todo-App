@@ -1,10 +1,11 @@
 import { useState } from 'react';
 
-import { Form } from '../Form/Form';
+import { NewTaskField } from '../NewTaskField/NewTaskField';
 import { TaskList } from '../TaskList/TaskList';
 import { Footer } from '../Footer/Footer';
 
 import './App.css';
+// import { el } from 'date-fns/locale';
 
 export function App() {
   const [todoData, setTodoData] = useState([]);
@@ -12,62 +13,50 @@ export function App() {
   const deleteItem = (id) => {
     const i = todoData.findIndex((el) => el.id === id);
 
-    const newArr = JSON.parse(JSON.stringify(todoData));
+    const newArr = [...todoData];
     newArr.splice(i, 1);
 
     setTodoData(newArr);
   };
 
   const addItem = (item) => {
-    let newArr = JSON.parse(JSON.stringify(todoData));
+    let newArr = [...todoData];
     newArr.push(item);
 
     setTodoData(newArr);
   };
 
   const onToggleDone = (id) => {
-    const i = todoData.findIndex((el) => el.id === id);
-
-    let newArr = JSON.parse(JSON.stringify(todoData));
-
-    newArr.forEach((item, index) => {
-      if (i === index) item.done = !todoData[i].done;
+    const newArr = [...todoData];
+    newArr.forEach((elem) => {
+      if (elem.id === id) elem.done = !elem.done;
     });
-
-    const checkbox = document.getElementById(`${id}`);
-
-    if (!todoData[i].done) {
-      checkbox.checked = true;
-    } else {
-      checkbox.checked = false;
-    }
 
     setTodoData(newArr);
   };
 
-  const onEditingSubmit = (event) => {
-    event.preventDefault();
+  const onEditingSubmit = (event, id, editContainer) => {
+    if (event.key === 'Enter') {
+      const todoInput = event.target;
 
-    const form = event.target;
+      const newArr = [...todoData];
 
-    form.classList.add('hidden');
+      newArr.forEach((element) => {
+        if (element.id === id) {
+          element.description = todoInput.value;
+        }
+      });
 
-    let inputValue = form.childNodes[0].value;
+      setTodoData(newArr);
 
-    const task = form.parentElement.childNodes[0];
-    task.classList.remove('hidden');
+      const container = editContainer.current;
 
-    const newArr = JSON.parse(JSON.stringify(todoData));
+      const task = container.parentElement.childNodes[0];
 
-    const id = Number(form.id.slice(5));
+      container.classList.add('hidden');
 
-    newArr.forEach((element) => {
-      if (element.id === id) {
-        element.description = inputValue;
-      }
-    });
-
-    setTodoData(newArr);
+      task.classList.remove('hidden');
+    } else return;
   };
 
   const filterChange = (event) => {
@@ -76,29 +65,16 @@ export function App() {
 
     const btn = event.target;
     btn.classList.add('selected');
-
-    const newArr = JSON.parse(JSON.stringify(todoData));
-
-    newArr.forEach((element) => {
-      element.hidden = false;
-      const div = document.getElementById(`${element.id}`).parentNode;
-      div.classList.remove('hidden');
-    });
   };
 
   const filterActive = (event) => {
     filterChange(event);
 
-    const newArr = JSON.parse(JSON.stringify(todoData));
+    const newArr = [...todoData];
 
     newArr.forEach((element) => {
-      if (element.done) {
-        element.hidden = !element.hidden;
-
-        const div = document.getElementById(`${element.id}`).parentNode;
-
-        div.classList.add('hidden');
-      }
+      if (element.done) element.hidden = true;
+      else element.hidden = false;
     });
 
     setTodoData(newArr);
@@ -106,21 +82,24 @@ export function App() {
 
   const filterAll = (event) => {
     filterChange(event);
+
+    const newArr = [...todoData];
+
+    newArr.forEach((element) => {
+      element.hidden = false;
+    });
+
+    setTodoData(newArr);
   };
 
   const filterCompleted = (event) => {
     filterChange(event);
 
-    const newArr = JSON.parse(JSON.stringify(todoData));
+    const newArr = [...todoData];
 
     newArr.forEach((element) => {
-      if (!element.done) {
-        element.hidden = !element.hidden;
-
-        const div = document.getElementById(`${element.id}`).parentNode;
-
-        div.classList.add('hidden');
-      }
+      if (element.done) element.hidden = false;
+      else element.hidden = true;
     });
 
     setTodoData(newArr);
@@ -145,14 +124,14 @@ export function App() {
     <section className="todoapp">
       <header className="header">
         <h1>todos</h1>
-        <Form addItem={addItem} />
+        <NewTaskField addItem={addItem} />
       </header>
       <section className="main">
         <TaskList
           todos={todoData}
           onDeleted={deleteItem}
-          onToggleDone={onToggleDone}
           onEditingSubmit={onEditingSubmit}
+          onToggleDone={onToggleDone}
         />
         <Footer
           todo={todoCount}

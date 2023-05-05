@@ -4,16 +4,16 @@ import { Task } from '../Task/Task';
 
 import './TaskList.css';
 
-export function TaskList({ todos, onDeleted, onToggleDone, onEditingSubmit }) {
+export function TaskList({ todos, onDeleted, onEditingSubmit, onToggleDone }) {
   return (
     <ul className="todo-list">
       {todos.map((todo) => (
         <Task
           key={todo.id}
           {...todo}
-          onDeleted={() => onDeleted(todo.id)}
-          onToggleDone={() => onToggleDone(todo.id)}
+          onDeleted={onDeleted}
           onEditingSubmit={onEditingSubmit}
+          onToggleDone={onToggleDone}
         />
       ))}
     </ul>
@@ -23,7 +23,6 @@ export function TaskList({ todos, onDeleted, onToggleDone, onEditingSubmit }) {
 TaskList.propTypes = {
   todos: PropTypes.arrayOf(PropTypes.object).isRequired,
   onDeleted: PropTypes.func.isRequired,
-  onToggleDone: PropTypes.func.isRequired,
   onEditingSubmit: PropTypes.func.isRequired,
 };
 

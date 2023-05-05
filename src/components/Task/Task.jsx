@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -6,7 +6,7 @@ import { getPadTime } from '../../helpers/getPadTime';
 
 import './Task.css';
 
-export function Task({ description, date, onDeleted, onToggleDone, onEditingSubmit, done, id, min, sec }) {
+export function Task({ description, date, onDeleted, onEditingSubmit, onToggleDone, done, id, min, sec, hidden }) {
   const minutes = Number(min);
   const seconds = Number(sec);
 
@@ -15,6 +15,8 @@ export function Task({ description, date, onDeleted, onToggleDone, onEditingSubm
 
   const [timeLeft, setTimeLeft] = useState(minutes * 60 + seconds);
   const [intervalId, setIntervalId] = useState();
+
+  const hiddenContainer = useRef();
 
   useEffect(() => {
     if (isTimerOn) {
@@ -39,25 +41,20 @@ export function Task({ description, date, onDeleted, onToggleDone, onEditingSubm
     setLabel(event.target.value);
   };
 
-  const onToggleEdit = (text, id) => {
-    const form = document.getElementById(`form-${id}`);
-    const task = form.parentElement.childNodes[0];
+  const onToggleEdit = (text) => {
+    const editContainer = hiddenContainer.current;
+
+    const task = editContainer.parentElement.childNodes[0];
     const label = task.querySelector('.done');
 
     if (!label) {
-      form.classList.remove('hidden');
+      editContainer.classList.remove('hidden');
 
       task.classList.add('hidden');
 
       setLabel(text);
     } else return;
   };
-
-  let labelClassNames;
-
-  if (done) {
-    labelClassNames = 'done';
-  }
 
   const todoMin = getPadTime(Math.floor(timeLeft / 60));
 
@@ -66,7 +63,7 @@ export function Task({ description, date, onDeleted, onToggleDone, onEditingSubm
   let time = `${todoMin}:${todoSec}`;
 
   const timer =
-    todoMin && todoSec ? (
+    minutes || seconds ? (
       <span className="created timer-button">
         <button className="icon icon-play" onClick={onTimerPlayClick} />
         <button className="icon icon-pause" onClick={onTimerPauseClick} />
@@ -75,13 +72,13 @@ export function Task({ description, date, onDeleted, onToggleDone, onEditingSubm
     ) : null;
 
   return (
-    <li>
-      <div>
-        <input className="toggle" type="checkbox" onClick={onToggleDone} id={id} />
-        <label htmlFor="random">
-          <span className={labelClassNames} onClick={onToggleDone} id="random">
-            {description}
-          </span>
+    <li className={hidden ? 'hidden-todo' : null}>
+      <div className="todo">
+        <label className="todo-check" onChange={() => onToggleDone(id)}>
+          <input className="toggle" type="checkbox" />
+          <span className={done ? 'done' : null}>{description}</span>
+        </label>
+        <div className="todo__main-part">
           {timer}
           <span className="created">
             {`created ${formatDistanceToNow(date, {
@@ -89,14 +86,15 @@ export function Task({ description, date, onDeleted, onToggleDone, onEditingSubm
               addSuffix: true,
             })}`}
           </span>
-        </label>
-        <button className="icon icon-edit" onClick={() => onToggleEdit(description, id)}></button>
-        <button className="icon icon-destroy" onClick={onDeleted}></button>
+
+          <button className="icon icon-edit" onClick={() => onToggleEdit(description, id)}></button>
+          <button className="icon icon-destroy" onClick={() => onDeleted(id)}></button>
+        </div>
       </div>
 
-      <form className="hidden" onSubmit={onEditingSubmit} id={`form-${id}`}>
+      <div className="hidden" onKeyDown={() => onEditingSubmit(event, id, hiddenContainer)} ref={hiddenContainer}>
         <input type="text" className="edit" onChange={onLabelChange} value={label}></input>
-      </form>
+      </div>
     </li>
   );
 }
@@ -105,7 +103,6 @@ Task.propTypes = {
   description: PropTypes.string,
   date: PropTypes.number,
   onDeleted: PropTypes.func.isRequired,
-  onToggleDone: PropTypes.func.isRequired,
   onEditingSubmit: PropTypes.func.isRequired,
   done: PropTypes.bool,
   id: PropTypes.number,

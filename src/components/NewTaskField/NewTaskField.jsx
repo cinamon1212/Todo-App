@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import './Form.css';
+import './NewTaskField.css';
 
-export function Form({ addItem }) {
+export function NewTaskField({ addItem }) {
   const [label, setLabel] = useState('');
   const [min, setMin] = useState('');
   const [sec, setSec] = useState('');
@@ -41,6 +41,7 @@ export function Form({ addItem }) {
   const onKeyDown = (event) => {
     if (event.key === 'Enter') {
       const item = createTodo(label, min, sec);
+      if (!item.description.trim()) return;
       addItem(item);
 
       setLabel('');
