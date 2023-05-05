@@ -1,3 +1,3 @@
 # Ссылка на развернутое приложение
 
-https://todo-hooks-8heseodv3-cinamon1212.vercel.app/
+https://todo-hooks-ee07vulnv-cinamon1212.vercel.app/
